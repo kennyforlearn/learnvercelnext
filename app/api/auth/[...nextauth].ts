@@ -4,10 +4,12 @@ import Facebook from "next-auth/providers/facebook";
 import Microsoft from "next-auth/providers/microsoft-entra-id";
 import LinkedIn from "next-auth/providers/linkedin";
 
-const AUTHORIZED_EMAILS = [
-  "kenny.tong9045@gmail.com",
-  // Add more authorized emails here
-];
+const AUTHORIZED_EMAILS = (
+  process.env.AUTHORIZED_EMAILS || ""
+)
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [

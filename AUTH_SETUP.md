@@ -94,15 +94,13 @@ LINKEDIN_CLIENT_SECRET=your_client_secret
 
 ## Step 4: Update Authorized Emails
 
-Edit `app/api/auth/[...nextauth].ts` and add authorized email addresses:
+Authorized emails are now read from an environment variable. In your `.env.local` (or in Vercel settings) add a comma‑separated list:
 
-```typescript
-const AUTHORIZED_EMAILS = [
-  "kenny.tong9045@gmail.com",
-  "another@email.com",
-  // Add more authorized emails here
-];
+```dotenv
+AUTHORIZED_EMAILS=kenny.tong9045@gmail.com,alice@example.com
 ```
+
+The code will split and normalize the entries automatically; you can update the list without touching source files.
 
 ## Step 5: (Optional) Set Up Supabase Database
 
