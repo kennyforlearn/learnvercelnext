@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/app/api/auth/[...nextauth]";
 import Link from "next/link";
 
 export default async function Home() {

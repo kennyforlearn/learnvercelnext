@@ -11,40 +11,34 @@ const AUTHORIZED_EMAILS = (
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
-export const { auth, signIn, signOut, handlers } = NextAuth({
+export const {
+  handlers,
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     Facebook({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      clientId: process.env.FACEBOOK_CLIENT_ID!,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
     }),
     Microsoft({
-      clientId: process.env.MICROSOFT_CLIENT_ID,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+      clientId: process.env.MICROSOFT_CLIENT_ID!,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
     }),
     LinkedIn({
-      clientId: process.env.LINKEDIN_CLIENT_ID,
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+      clientId: process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
     }),
   ],
   callbacks: {
     async signIn({ user }) {
-      // Check if user email is in whitelist
-      if (!user.email) {
-        return false;
-      }
-
-      const isAuthorized = AUTHORIZED_EMAILS.includes(user.email.toLowerCase());
-
-      if (!isAuthorized) {
-        console.log(`Unauthorized login attempt: ${user.email}`);
-        return false;
-      }
-
-      return true;
+      if (!user.email) return false;
+      return AUTHORIZED_EMAILS.includes(user.email.toLowerCase());
     },
     async jwt({ token, user }) {
       if (user) {
@@ -66,3 +60,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
+
+export const GET = handlers.GET;
+export const POST = handlers.POST;

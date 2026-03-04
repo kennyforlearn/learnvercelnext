@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/lib/auth";
+import { auth, signOut } from "@/app/api/auth/[...nextauth]";
 import { redirect } from "next/navigation";
 
 export default async function Dashboard() {

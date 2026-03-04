@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/app/api/auth/[...nextauth]";
 import { NextRequest, NextResponse } from "next/server";
 
 // Protected routes that require authentication
