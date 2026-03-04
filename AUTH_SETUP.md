@@ -14,12 +14,15 @@ Copy the output and add it to `.env.local` as `NEXTAUTH_SECRET`
 
 ## Step 2: Set NEXTAUTH_URL
 
-Add your application URL to `.env.local`:
+**For Local Development:**
+```
+NEXTAUTH_URL=http://localhost:3000
+```
 
-```
-NEXTAUTH_URL=http://localhost:3000  # for development
-NEXTAUTH_URL=https://yourdomain.com  # for production
-```
+**For Vercel Deployment:**
+- Vercel automatically sets `NEXTAUTH_URL` to your deployment URL
+- You don't need to set it manually in Vercel environment variables
+- If you need to override it, set it to your Vercel domain (e.g., `https://your-app.vercel.app`)
 
 ## Step 3: Set Up OAuth Providers
 
@@ -140,7 +143,53 @@ CREATE TABLE sessions (
 );
 ```
 
-## Step 6: Test the Setup
+## Step 6: Deploy to Vercel
+
+### Environment Variables in Vercel
+
+1. Go to your [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select your project
+3. Go to **Settings** → **Environment Variables**
+4. Add the following variables:
+
+**Required:**
+- `NEXTAUTH_SECRET` - Your generated secret key
+- `GOOGLE_CLIENT_ID` - Your Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET` - Your Google OAuth client secret
+- `FACEBOOK_CLIENT_ID` - Your Facebook app ID
+- `FACEBOOK_CLIENT_SECRET` - Your Facebook app secret
+- `MICROSOFT_CLIENT_ID` - Your Microsoft client ID
+- `MICROSOFT_CLIENT_SECRET` - Your Microsoft client secret
+- `LINKEDIN_CLIENT_ID` - Your LinkedIn client ID
+- `LINKEDIN_CLIENT_SECRET` - Your LinkedIn client secret
+
+**Optional (Vercel sets this automatically):**
+- `NEXTAUTH_URL` - Your Vercel deployment URL (only set if you need to override)
+
+### OAuth Redirect URIs for Production
+
+Update your OAuth provider settings with your Vercel domain:
+
+**Google:**
+- Authorized redirect URI: `https://your-app.vercel.app/api/auth/callback/google`
+
+**Facebook:**
+- Valid OAuth Redirect URIs: `https://your-app.vercel.app/api/auth/callback/facebook`
+
+**Microsoft:**
+- Redirect URI: `https://your-app.vercel.app/api/auth/callback/microsoft-entra-id`
+
+**LinkedIn:**
+- Authorized redirect URLs: `https://your-app.vercel.app/api/auth/callback/linkedin`
+
+### Important Notes for Vercel
+
+- **Environment Variables Scope**: Set variables for "Production", "Preview", and "Development" as needed
+- **NEXTAUTH_URL**: Vercel automatically provides this, but if you have issues, you can manually set it
+- **Re-deploy**: After adding environment variables, trigger a new deployment
+- **Domain Changes**: If you change your Vercel domain, update OAuth redirect URIs accordingly
+
+## Step 7: Test the Setup
 
 1. Copy `.env.local.example` to `.env.local` and fill in all credentials
 2. Run `npm run dev`
