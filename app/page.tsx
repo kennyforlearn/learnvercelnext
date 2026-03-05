@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import Link from "next/link";
+import { InfoButton } from "@/components/InfoButton";
 
 export default async function Home() {
   const session = await auth();
@@ -28,7 +29,8 @@ export default async function Home() {
           </Link>
         </div>
       ) : (
-        <div style={{ backgroundColor: "#fff3e0", padding: "20px", borderRadius: "8px", marginTop: "20px" }}>
+        <div style={{ backgroundColor: "#fff3e0", padding: "20px", borderRadius: "8px", marginTop: "20px", position: "relative" }}>
+          <InfoButton />
           <p style={{ margin: "0" }}>Not logged in</p>
           <Link href="/auth/signin">
             <button
