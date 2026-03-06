@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Spectral } from "next/font/google";
+import { IBM_Plex_Serif, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const spectral = Spectral({
-  weight: ["400", "500", "600", "700"],
+const serif = IBM_Plex_Serif({
+  weight: ["400"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const mono = IBM_Plex_Mono({
+  weight: ["400"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -20,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={spectral.className}>
+      <body className={serif.className}>
         {children}
       </body>
     </html>
