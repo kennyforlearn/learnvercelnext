@@ -5,8 +5,8 @@
 This application uses OAuth 2.0 with multiple providers (Google, Facebook, Microsoft, LinkedIn) to authenticate users. Here's a step-by-step breakdown of the process:
 
 ### 1. User Initiates Sign-In
-- User visits the home page and sees "Not logged in"
-- User clicks "Sign In" button, which redirects to `/auth/signin`
+- User visits the home page
+- If not logged in, user is automatically redirected to `/auth/signin`
 - On the sign-in page, user selects an OAuth provider (e.g., Google)
 
 ### 2. OAuth Provider Authentication

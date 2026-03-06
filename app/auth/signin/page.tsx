@@ -2,6 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { InfoButton } from "@/components/InfoButton";
 
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -20,7 +21,8 @@ export default function SignIn() {
   };
 
   return (
-    <div className="section-shadow" style={{ padding: "40px", maxWidth: "500px", margin: "100px auto", backgroundColor: "white" }}>
+    <div className="section-shadow" style={{ padding: "40px", maxWidth: "500px", margin: "100px auto", backgroundColor: "white", position: "relative" }}>
+      <InfoButton />
       <h1 style={{ fontSize: "2rem", fontWeight: "600", marginBottom: "1rem", textAlign: "center" }}>Sign In</h1>
       <p style={{ textAlign: "center", marginBottom: "2rem", color: "#666" }}>Only authorized accounts can access this application.</p>
 
