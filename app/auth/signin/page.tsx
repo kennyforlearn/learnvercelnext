@@ -20,9 +20,9 @@ export default function SignIn() {
   };
 
   return (
-    <div style={{ padding: "40px", maxWidth: "500px", margin: "100px auto" }}>
-      <h1>Sign In</h1>
-      <p>Only authorized accounts can access this application.</p>
+    <div className="section-shadow" style={{ padding: "40px", maxWidth: "500px", margin: "100px auto", backgroundColor: "white" }}>
+      <h1 style={{ fontSize: "2rem", fontWeight: "600", marginBottom: "1rem", textAlign: "center" }}>Sign In</h1>
+      <p style={{ textAlign: "center", marginBottom: "2rem", color: "#666" }}>Only authorized accounts can access this application.</p>
 
       <div style={{ marginTop: "30px", display: "flex", flexDirection: "column", gap: "10px" }}>
         {providers.map((provider) => (
@@ -39,6 +39,7 @@ export default function SignIn() {
               opacity: isLoading === provider.id ? 0.6 : 1,
               backgroundColor: "#f5f5f5",
               transition: "all 0.3s",
+              fontWeight: "500",
             }}
           >
             {isLoading === provider.id ? "Loading..." : provider.label}
@@ -46,7 +47,7 @@ export default function SignIn() {
         ))}
       </div>
 
-      <p style={{ marginTop: "30px", fontSize: "14px", color: "#666" }}>
+      <p style={{ marginTop: "30px", fontSize: "14px", color: "#666", textAlign: "center" }}>
         If you don't have authorization, please contact the administrator.
       </p>
     </div>

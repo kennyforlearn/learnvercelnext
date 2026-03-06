@@ -50,6 +50,8 @@ export function InfoButton() {
               maxHeight: "80vh",
               overflow: "auto",
               position: "relative",
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
+              border: "1px solid rgba(0, 0, 0, 0.1)",
             }}
             onClick={(e) => e.stopPropagation()}
           >

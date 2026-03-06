@@ -7,11 +7,11 @@ export default async function Home() {
 
   return (
     <main style={{ padding: "40px", maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Welcome to Your App</h1>
+      <h1 style={{ fontSize: "2.5rem", fontWeight: "600", marginBottom: "2rem", textAlign: "center" }}>Welcome to Your App</h1>
 
       {session?.user ? (
-        <div style={{ backgroundColor: "#e8f5e9", padding: "20px", borderRadius: "8px", marginTop: "20px" }}>
-          <p style={{ margin: "0" }}>✓ Logged in as: <strong>{session.user.email}</strong></p>
+        <div className="section-shadow" style={{ backgroundColor: "#e8f5e9", padding: "20px", borderRadius: "8px", marginTop: "20px" }}>
+          <p style={{ margin: "0", fontSize: "1.1rem" }}>✓ Logged in as: <strong>{session.user.email}</strong></p>
           <Link href="/dashboard">
             <button
               style={{
@@ -22,6 +22,8 @@ export default async function Home() {
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
+                fontSize: "1rem",
+                fontWeight: "500",
               }}
             >
               Go to Dashboard
@@ -29,9 +31,9 @@ export default async function Home() {
           </Link>
         </div>
       ) : (
-        <div style={{ backgroundColor: "#fff3e0", padding: "20px", borderRadius: "8px", marginTop: "20px", position: "relative" }}>
+        <div className="section-shadow" style={{ backgroundColor: "#fff3e0", padding: "20px", borderRadius: "8px", marginTop: "20px", position: "relative" }}>
           <InfoButton />
-          <p style={{ margin: "0" }}>Not logged in</p>
+          <p style={{ margin: "0", fontSize: "1.1rem" }}>Not logged in</p>
           <Link href="/auth/signin">
             <button
               style={{
@@ -42,6 +44,8 @@ export default async function Home() {
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
+                fontSize: "1rem",
+                fontWeight: "500",
               }}
             >
               Sign In
