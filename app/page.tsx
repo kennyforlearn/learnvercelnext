@@ -31,7 +31,7 @@ export default async function Home() {
           </Link>
         </div>
       ) : (
-        <div className="section-shadow" style={{ backgroundColor: "#fff3e0", padding: "20px", borderRadius: "8px", marginTop: "20px", position: "relative" }}>
+        <div className="section-shadow" style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", marginTop: "20px", position: "relative" }}>
           <InfoButton />
           <p style={{ margin: "0", fontSize: "1.1rem" }}>Not logged in</p>
           <Link href="/auth/signin">
