@@ -78,7 +78,7 @@ export function InfoButton() {
                 <li><strong>Session created</strong> → User logged in successfully</li>
               </ol>
               <p><strong>Security:</strong> Only pre-approved emails can access. Sessions managed server-side.</p>
-              <p><Link href="/docs/authentication-process" style={{ color: "#2196f3" }}>Read full documentation →</Link></p>
+              <p><Link href="/docs" style={{ color: "#2196f3" }}>Read full documentation →</Link></p>
             </div>
           </div>
         </div>
