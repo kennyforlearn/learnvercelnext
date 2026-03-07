@@ -45,7 +45,7 @@ export default function SignIn() {
       <h1 style={{ fontSize: "2rem", fontWeight: "600", marginBottom: "1rem", textAlign: "center" }}>Sign In</h1>
       <p style={{ textAlign: "center", marginBottom: "2rem", color: "#666" }}>Only authorized accounts can access this application.</p>
 
-      <div style={{ marginTop: "30px", display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ marginTop: "30px", display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: "10px" }}>
         {providers.map((provider) => (
           <button
             key={provider.id}
@@ -54,6 +54,7 @@ export default function SignIn() {
             className="provider-btn"
             style={{
               padding: "12px 16px",
+              min-width: "120px",
               fontSize: "16px",
               border: "1px solid #ccc",
               borderRadius: "6px",
