@@ -14,8 +14,9 @@ export default async function Dashboard() {
       {/* top bar */}
       <header
         style={{
-          backgroundColor: "#fff",
-          borderBottom: "1px solid #ddd",
+          backgroundColor: "white", // main theme background
+          // remove visible border
+          borderBottom: "none",
           padding: "10px 20px",
           display: "flex",
           justifyContent: "space-between",
@@ -35,16 +36,15 @@ export default async function Dashboard() {
             type="submit"
             style={{
               padding: "6px 12px",
-              fontSize: "14px",
-              backgroundColor: "#d32f2f",
-              color: "white",
+              fontSize: "18px",
+              backgroundColor: "transparent",
+              color: "#d32f2f",
               border: "none",
-              borderRadius: "4px",
               cursor: "pointer",
-              fontWeight: "500",
             }}
+            aria-label="Sign out"
           >
-            Sign Out
+            🚪
           </button>
         </form>
       </header>
@@ -60,7 +60,6 @@ export default async function Dashboard() {
             boxSizing: "border-box",
           }}
         >
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>Menu</h2>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li style={{ marginBottom: "0.5rem" }}>
               <a href="/dashboard" style={{ textDecoration: "none", color: "#333" }}>
