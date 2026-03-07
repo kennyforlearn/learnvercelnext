@@ -54,7 +54,7 @@ export default function SignIn() {
             className="provider-btn"
             style={{
               padding: "12px 16px",
-              min-width: "120px",
+              minWidth: "120px",
               fontSize: "16px",
               border: "1px solid #ccc",
               borderRadius: "6px",
