@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface LoggedInInfoProps {
@@ -10,12 +10,23 @@ interface LoggedInInfoProps {
 
 export default function LoggedInInfo({ email }: LoggedInInfoProps) {
   const router = useRouter();
+  const [count, setCount] = useState(5);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // decrement counter every second
+    const interval = setInterval(() => {
+      setCount((c) => c - 1);
+    }, 1000);
+
+    // final redirect when counter reaches 0
+    const timeout = setTimeout(() => {
       router.push('/dashboard');
     }, 5000);
-    return () => clearTimeout(timer);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, [router]);
 
   return (
@@ -38,10 +49,14 @@ export default function LoggedInInfo({ email }: LoggedInInfoProps) {
           padding: "20px",
           borderRadius: "8px",
           marginTop: "20px",
+          textAlign: "center", // center contents
         }}
       >
         <p style={{ margin: "0", fontSize: "1.1rem" }}>
           ✓ Logged in as: <strong>{email}</strong>
+        </p>
+        <p style={{ margin: "8px 0 0", fontSize: "0.95rem", color: "#555" }}>
+          Will redirect to main dashboard in <strong>{count}</strong> seconds
         </p>
         <Link href="/dashboard">
           <button
@@ -57,7 +72,7 @@ export default function LoggedInInfo({ email }: LoggedInInfoProps) {
               fontWeight: "500",
             }}
           >
-            Go to Dashboard
+            Dashboard
           </button>
         </Link>
       </div>
