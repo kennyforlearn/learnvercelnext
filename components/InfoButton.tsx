@@ -73,7 +73,6 @@ export function InfoButton() {
             <div style={{ lineHeight: "1.6", color: "#333" }}>
               <p>This app uses OAuth authentication with multiple providers:</p>
               <ol>
-                <li><strong>User clicks "Sign In"</strong> → Redirected to provider login</li>
                 <li><strong>Provider authenticates</strong> → User grants permission</li>
                 <li><strong>Callback to app</strong> → Receives user profile data</li>
                 <li><strong>Email check</strong> → Verifies against authorized whitelist</li>
