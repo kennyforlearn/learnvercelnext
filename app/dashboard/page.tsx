@@ -18,11 +18,11 @@ export default async function Dashboard() {
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=logout"
         />
       </Head>
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "var(--bg-color)" }}>
       {/* top bar */}
       <header
         style={{
-          backgroundColor: "white", // main theme background
+          backgroundColor: "var(--bg-color)", // main theme background
           // remove visible border
           borderBottom: "none",
           padding: "10px 20px",
@@ -66,9 +66,9 @@ export default async function Dashboard() {
         <nav
           style={{
             width: "200px",
-            backgroundColor: "#f0f0f0",
+            backgroundColor: "var(--bg-color)",
             padding: "20px",
-            borderRight: "1px solid #ddd",
+            border: "none",
             boxSizing: "border-box",
           }}
         >
@@ -99,7 +99,7 @@ export default async function Dashboard() {
 
           <div
             className="section-shadow"
-            style={{ backgroundColor: "#f5f5f5", padding: "20px", borderRadius: "8px", marginTop: "20px" }}
+            style={{ backgroundColor: "var(--bg-color)", padding: "20px", borderRadius: "8px", marginTop: "20px" }}
           >
             <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem" }}>
               Welcome, {session.user.name || session.user.email}!
@@ -119,14 +119,15 @@ export default async function Dashboard() {
       {/* footer */}
       <footer
         style={{
-          backgroundColor: "#fafafa",
+          backgroundColor: "var(--bg-color)",
           padding: "10px 20px",
           textAlign: "center",
-          borderTop: "1px solid #ddd",
+          borderTop: "none",
         }}
       >
         © {new Date().getFullYear()} learnvercelnext
       </footer>
     </div>
+    </>
   );
 }
