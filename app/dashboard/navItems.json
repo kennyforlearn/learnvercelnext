@@ -1,0 +1,5 @@
+[
+  {"title": "Home", "href": "/dashboard"},
+  {"title": "Profile", "href": "/dashboard/profile"},
+  {"title": "Settings", "href": "/dashboard/settings"}
+]
