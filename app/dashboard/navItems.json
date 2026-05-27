@@ -1,5 +1,6 @@
 [
   {"title": "Home", "href": "/dashboard"},
   {"title": "Profile", "href": "/dashboard/profile"},
+  {"title": "Documentation", "href": "/dashboard/documentation"},
   {"title": "Settings", "href": "/dashboard/settings"}
 ]

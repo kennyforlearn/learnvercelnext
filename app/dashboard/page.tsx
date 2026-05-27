@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import PublicInfo from "@/components/dashboard/PublicInfo";
 
 export default async function Dashboard() {
   const session = await auth();
@@ -9,21 +10,8 @@ export default async function Dashboard() {
         Dashboard
       </h1>
 
-      <div
-        className="section-shadow"
-        style={{ backgroundColor: "var(--bg-color)", padding: "20px", borderRadius: "8px", marginTop: "20px" }}
-      >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem" }}>
-          Welcome, {session?.user?.name || session?.user?.email}!
-        </h2>
-        <p style={{ margin: "0", fontSize: "1.1rem" }}>Email: {session?.user?.email}</p>
-        {session?.user?.image && (
-          <img
-            src={session.user.image}
-            alt="Profile"
-            style={{ width: "100px", height: "100px", borderRadius: "50%", marginTop: "10px", border: "2px solid #ddd" }}
-          />
-        )}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+        <PublicInfo />
       </div>
     </div>
   );
