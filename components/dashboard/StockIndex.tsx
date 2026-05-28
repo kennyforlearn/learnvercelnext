@@ -1,53 +1,25 @@
 import { useState, useEffect } from "react";
 
-interface StockData {
-  ftse100: number;
-  ftse100Change: number;
-  sp500: number;
-  sp500Change: number;
-  dax: number;
-  daxChange: number;
+interface Quote {
+  symbol: string;
+  price: number | null;
+  change: number | null;
 }
 
 export default function StockIndex() {
-  const [stocks, setStocks] = useState<StockData | null>(null);
+  const [quotes, setQuotes] = useState<Quote[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const apiKey = process.env.NEXT_PUBLIC_STOCK_API_KEY;
-        if (!apiKey) {
-          throw new Error("Stock API key not configured");
-        }
-
-        // Using Alpha Vantage or similar service
-        // Fetch FTSE 100, S&P 500, and DAX indices
-        const indices = ["^FTSE", "^GSPC", "^GDAXI"];
-        const stockData: any = {};
-
-        // Note: This is a simplified example. Adjust based on your API provider
-        // Some providers like Alpha Vantage have rate limits, so consider caching
-        const response = await fetch(
-          `https://api.example.com/indices?symbols=${indices.join(",")}&apiKey=${apiKey}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch stock data");
-        }
+        const response = await fetch("/api/stocks");
+        if (!response.ok) throw new Error(`Failed to fetch stocks: ${response.status}`);
 
         const data = await response.json();
-
-        // Parse response based on your API structure
-        setStocks({
-          ftse100: data.FTSE?.price || 0,
-          ftse100Change: data.FTSE?.change || 0,
-          sp500: data.SP500?.price || 0,
-          sp500Change: data.SP500?.change || 0,
-          dax: data.DAX?.price || 0,
-          daxChange: data.DAX?.change || 0,
-        });
+        // Expecting data.quotes = [{ symbol, price, change }]
+        setQuotes(data.quotes || []);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error fetching stock data");
@@ -57,19 +29,19 @@ export default function StockIndex() {
     };
 
     fetchStocks();
-    // Refresh stocks every 15 minutes (markets are closed outside trading hours)
     const interval = setInterval(fetchStocks, 900000);
     return () => clearInterval(interval);
   }, []);
 
-  const getChangeColor = (change: number) => {
+  const getChangeColor = (change: number | null) => {
+    if (change === null) return "#999";
     if (change > 0) return "#51cf66";
     if (change < 0) return "#ff6b6b";
     return "#999";
   };
 
-  const formatNumber = (num: number) => {
-    return num ? num.toLocaleString("en-GB", { maximumFractionDigits: 2 }) : "---";
+  const formatNumber = (num: number | null) => {
+    return num !== null ? num.toLocaleString("en-GB", { maximumFractionDigits: 2 }) : "---";
   };
 
   return (
@@ -86,28 +58,20 @@ export default function StockIndex() {
         <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>Loading...</p>
       ) : error ? (
         <p style={{ margin: "5px 0", fontSize: "0.9rem", color: "#ff6b6b" }}>{error}</p>
-      ) : stocks ? (
-        <>
-          <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>
-            FTSE 100: {formatNumber(stocks.ftse100)}
-            <span style={{ color: getChangeColor(stocks.ftse100Change), marginLeft: "8px" }}>
-              {stocks.ftse100Change > 0 ? "▲" : "▼"} {formatNumber(stocks.ftse100Change)}
-            </span>
-          </p>
-          <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>
-            S&P 500: {formatNumber(stocks.sp500)}
-            <span style={{ color: getChangeColor(stocks.sp500Change), marginLeft: "8px" }}>
-              {stocks.sp500Change > 0 ? "▲" : "▼"} {formatNumber(stocks.sp500Change)}
-            </span>
-          </p>
-          <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>
-            DAX: {formatNumber(stocks.dax)}
-            <span style={{ color: getChangeColor(stocks.daxChange), marginLeft: "8px" }}>
-              {stocks.daxChange > 0 ? "▲" : "▼"} {formatNumber(stocks.daxChange)}
-            </span>
-          </p>
-        </>
-      ) : null}
+      ) : quotes && quotes.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          {quotes.map((q) => (
+            <div key={q.symbol} style={{ fontSize: "0.9rem" }}>
+              <strong>{q.symbol}</strong>: {formatNumber(q.price)}
+              <span style={{ color: getChangeColor(q.change), marginLeft: "8px" }}>
+                {q.change !== null ? (q.change > 0 ? "▲" : "▼") : ""} {formatNumber(q.change)}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>No stock data available</p>
+      )}
     </div>
   );
 }

@@ -15,25 +15,19 @@ export default function News() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY;
-        if (!apiKey) {
-          throw new Error("News API key not configured");
-        }
-
-        const response = await fetch(
-          `https://newsapi.org/v2/top-headlines?country=gb&pageSize=3&apiKey=${apiKey}`
-        );
+        // Use server-side endpoint to avoid client protocol/TLS issues (HTTP 426)
+        const response = await fetch("/api/news");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch news");
+          throw new Error(`Failed to fetch news: ${response.status}`);
         }
 
         const data = await response.json();
         setArticles(
-          data.articles.slice(0, 3).map((article: any) => ({
+          (data.articles || []).slice(0, 3).map((article: any) => ({
             title: article.title,
-            source: article.source.name,
-            publishedAt: new Date(article.publishedAt).toLocaleDateString(),
+            source: article.source?.name || article.source,
+            publishedAt: article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : "",
             url: article.url,
           }))
         );

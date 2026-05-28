@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import PublicInfo from "@/components/dashboard/PublicInfo";
+import NonPublicInfo from "@/components/dashboard/NonPublicInfo";
 
 export default async function Dashboard() {
   const session = await auth();
@@ -11,6 +12,7 @@ export default async function Dashboard() {
       </h1>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px" }}>
+        <NonPublicInfo />
         <PublicInfo />
       </div>
     </div>
