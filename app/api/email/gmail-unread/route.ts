@@ -21,10 +21,10 @@ export async function GET(request: NextRequest) {
   try {
     const accessToken = process.env.GMAIL_ACCESS_TOKEN;
 
-    if (!accessToken) {
+    if (!accessToken || accessToken === "your_gmail_access_token_or_refresh_token") {
       return NextResponse.json(
-        { error: "Gmail access token not configured" },
-        { status: 500 }
+        { email: "Not connected", unreadCount: 0, error: "Gmail not configured" },
+        { status: 200 }
       );
     }
 
@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      throw new Error(`Gmail API error: ${response.statusText}`);
+      console.error(`Gmail API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Gmail API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -70,8 +71,8 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Gmail API Error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { email: "Not connected", unreadCount: 0, error: error instanceof Error ? error.message : "Unknown error" },
+      { status: 200 }
     );
   }
 }

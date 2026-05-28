@@ -24,7 +24,7 @@ export default function OctopusEnergy() {
 
         // Fetch from Octopus Energy API
         const response = await fetch(
-          `https://api.octopusenergy.com/v1/accounts/${accountNumber}/`,
+          `https://api.octopus.energy/v1/accounts/${accountNumber}/`,
           {
             headers: {
               Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,

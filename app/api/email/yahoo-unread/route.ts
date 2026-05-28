@@ -18,10 +18,10 @@ export async function GET(request: NextRequest) {
   try {
     const accessToken = process.env.YAHOO_ACCESS_TOKEN;
 
-    if (!accessToken) {
+    if (!accessToken || accessToken.startsWith("your_") || accessToken === "dj0yJmk9") {
       return NextResponse.json(
-        { error: "Yahoo Mail access token not configured" },
-        { status: 500 }
+        { unreadCount: 0, status: "disconnected", error: "Yahoo Mail not configured" },
+        { status: 200 }
       );
     }
 
@@ -37,7 +37,8 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      throw new Error(`Yahoo Mail API error: ${response.statusText}`);
+      console.error(`Yahoo Mail API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Yahoo Mail API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -55,8 +56,8 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Yahoo Mail API Error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      { unreadCount: 0, status: "disconnected", error: error instanceof Error ? error.message : "Unknown error" },
+      { status: 200 }
     );
   }
 }
