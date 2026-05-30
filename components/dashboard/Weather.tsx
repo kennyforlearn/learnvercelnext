@@ -11,6 +11,7 @@ export default function Weather() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [city, setCity] = useState<string>("London");
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -20,9 +21,9 @@ export default function Weather() {
           throw new Error("Weather API key not configured");
         }
 
-        // Default to London, UK. Can be customized based on user location
+        // Use selected city
         const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=London&units=metric&appid=${apiKey}`
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`
         );
 
         if (!response.ok) {
@@ -50,6 +51,36 @@ export default function Weather() {
     return () => clearInterval(interval);
   }, []);
 
+  // refetch when city changes
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      (async () => {
+        setLoading(true);
+        try {
+          const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+          if (!apiKey) throw new Error("Weather API key not configured");
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch weather data");
+          const data = await response.json();
+          setWeather({
+            temperature: Math.round(data.main.temp),
+            condition: data.weather[0].main,
+            humidity: data.main.humidity,
+            windSpeed: Math.round(data.wind.speed),
+          });
+          setError(null);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Error fetching weather");
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [city]);
+
   return (
     <div
       style={{
@@ -59,7 +90,12 @@ export default function Weather() {
         backgroundColor: "rgba(255, 255, 255, 0.05)",
       }}
     >
-      <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Weather</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Weather</h3>
+        <div>
+          <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" style={{ padding: '4px', fontSize: '0.9rem' }} />
+        </div>
+      </div>
       {loading ? (
         <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>Loading...</p>
       ) : error ? (

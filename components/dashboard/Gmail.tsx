@@ -10,6 +10,9 @@ export default function Gmail() {
   const [gmail, setGmail] = useState<GmailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Array<{id:string, from:string, subject:string, date:string}>>([]);
+  const [max, setMax] = useState<number>(10);
+  const [loadingMessages, setLoadingMessages] = useState(false);
 
   useEffect(() => {
     const fetchGmailData = async () => {
@@ -51,6 +54,27 @@ export default function Gmail() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const fetchMessages = async () => {
+      setLoadingMessages(true);
+      try {
+        const resp = await fetch(`/api/email/gmail-messages?max=${max}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          setMessages(data.messages || []);
+        } else {
+          setMessages([]);
+        }
+      } catch (e) {
+        setMessages([]);
+      } finally {
+        setLoadingMessages(false);
+      }
+    };
+
+    fetchMessages();
+  }, [max]);
+
   return (
     <div
       style={{
@@ -72,6 +96,33 @@ export default function Gmail() {
           <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>
             Status: {gmail.status === "connected" ? "✓ Connected" : "✗ Disconnected"}
           </p>
+
+          <div style={{ marginTop: "12px" }}>
+            <label style={{ fontSize: "0.85rem" }}>Show messages:</label>
+            <select value={max} onChange={(e) => setMax(parseInt(e.target.value))} style={{ marginLeft: "8px" }}>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+
+          <div style={{ marginTop: "10px" }}>
+            {loadingMessages ? (
+              <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>Loading messages...</p>
+            ) : messages.length === 0 ? (
+              <p style={{ margin: "5px 0", fontSize: "0.85rem" }}>No messages available</p>
+            ) : (
+              <ul style={{ paddingLeft: "16px", fontSize: "0.85rem" }}>
+                {messages.map((m) => (
+                  <li key={m.id} style={{ marginBottom: "6px" }}>
+                    <strong>{m.from}</strong>: {m.subject} <br />
+                    <span style={{ color: "#999", fontSize: "0.75rem" }}>{m.date}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </>
       ) : null}
     </div>
