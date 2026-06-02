@@ -38,7 +38,6 @@ export default function PersonalInfo({ user }: PersonalInfoProps) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
         <OctopusEnergy />
-        <HSBCBank />
         <Gmail />
         <YahooMail />
       </div>
