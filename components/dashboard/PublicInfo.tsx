@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Weather from "./Weather";
+import CityDashboard from "./CityDashboard";
 import News from "./News";
-import NetworkStatus from "./NetworkStatus";
-import PowerUtilities from "./PowerUtilities";
 import StockIndex from "./StockIndex";
 
 export default function PublicInfo() {
@@ -30,11 +28,9 @@ export default function PublicInfo() {
         Public Information
       </h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
-        <Weather />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
+        <CityDashboard />
         <News />
-        <NetworkStatus />
-        <PowerUtilities />
         <StockIndex />
       </div>
     </div>

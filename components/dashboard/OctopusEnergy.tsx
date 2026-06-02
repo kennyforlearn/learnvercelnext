@@ -17,38 +17,19 @@ export default function OctopusEnergy() {
   useEffect(() => {
     const fetchEnergyData = async () => {
       try {
-        const apiKey = process.env.NEXT_PUBLIC_OCTOPUS_API_KEY;
-        const accountNumber = process.env.NEXT_PUBLIC_OCTOPUS_ACCOUNT;
-
-        if (!apiKey || !accountNumber) {
-          throw new Error("Octopus Energy credentials not configured");
-        }
-
-        // Fetch from Octopus Energy API
-        const response = await fetch(
-          `https://api.octopus.energy/v1/accounts/${accountNumber}/`,
-          {
-            headers: {
-              Authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
-            },
-          }
-        );
+        // Use server-side endpoint to avoid exposing credentials
+        const response = await fetch("/api/octopus/account");
 
         if (!response.ok) {
           throw new Error("Failed to fetch energy data");
         }
 
         const data = await response.json();
-
-        // Parse the response structure from Octopus Energy
-        const property = data.properties?.[0];
-        const electricity = property?.electricity_meter_points?.[0]?.meters?.[0];
-
         setEnergy({
-          currentBill: data.current_bill_amount || 0,
-          dueDate: data.current_bill_due_date || "---",
-          usage: electricity?.consumption_standard || 0,
-          status: "connected",
+          currentBill: data.currentBill || 0,
+          dueDate: data.dueDate || "---",
+          usage: data.usage || 0,
+          status: data.status || "disconnected",
         });
         setError(null);
       } catch (err) {
@@ -124,24 +105,83 @@ export default function OctopusEnergy() {
             Status: {energy.status === "connected" ? "✓ Connected" : "✗ Disconnected"}
           </p>
 
-          {series && series.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <svg viewBox="0 0 300 80" width="100%" height="80" preserveAspectRatio="none">
-                {/* simple polyline chart */}
-                {(() => {
-                  const vals = series.map(s => s.value);
-                  const min = Math.min(...vals);
-                  const max = Math.max(...vals);
-                  const points = series.map((s, i) => {
-                    const x = (i / (series.length - 1)) * 300;
-                    const y = max === min ? 40 : 80 - ((s.value - min) / (max - min)) * 70;
-                    return `${x},${y}`;
-                  }).join(' ');
-                  return <polyline fill="none" stroke="#51cf66" strokeWidth={2} points={points} />
-                })()}
-              </svg>
-            </div>
-          )}
+      {series && series.length > 0 && (
+        <div style={{ marginTop: 16, overflow: 'auto' }}>
+          <div style={{ fontSize: '0.85rem', marginBottom: 8, fontWeight: 600 }}>Usage ({type})</div>
+          <svg viewBox="0 0 400 250" width="100%" height="250" preserveAspectRatio="xMidYMid meet" style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4 }}>
+            {/* Y-axis */}
+            <line x1="40" y1="10" x2="40" y2="220" stroke="rgba(255,255,255,0.3)" strokeWidth={1} />
+            {/* X-axis */}
+            <line x1="40" y1="220" x2="390" y2="220" stroke="rgba(255,255,255,0.3)" strokeWidth={1} />
+            
+            {/* Y-axis labels and ticks */}
+            {(() => {
+              const vals = series.map(s => s.value);
+              const min = Math.min(...vals);
+              const max = Math.max(...vals);
+              const step = Math.ceil((max - min) / 4);
+              const labels = [];
+              for (let i = 0; i <= 4; i++) {
+                const val = min + step * i;
+                const y = 220 - (i / 4) * 200;
+                labels.push(
+                  <g key={`y-${i}`}>
+                    <text x="30" y={y + 4} fontSize="11" fill="rgba(255,255,255,0.6)" textAnchor="end">{val}</text>
+                    <line x1="35" y1={y} x2="40" y2={y} stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+                  </g>
+                );
+              }
+              return labels;
+            })()}
+            
+            {/* X-axis labels and ticks (every 5 days or so) */}
+            {(() => {
+              const labels = [];
+              const interval = Math.max(1, Math.floor(series.length / 6));
+              for (let i = 0; i < series.length; i += interval) {
+                const x = 40 + ((i / (series.length - 1)) * 350);
+                const dateStr = series[i].date.slice(5); // MM-DD
+                labels.push(
+                  <g key={`x-${i}`}>
+                    <text x={x} y="240" fontSize="10" fill="rgba(255,255,255,0.6)" textAnchor="middle">{dateStr}</text>
+                    <line x1={x} y1="218" x2={x} y2="222" stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+                  </g>
+                );
+              }
+              return labels;
+            })()}
+            
+            {/* Grid lines (optional) */}
+            {(() => {
+              const lines = [];
+              for (let i = 1; i < 4; i++) {
+                const y = 220 - (i / 4) * 200;
+                lines.push(
+                  <line key={`grid-${i}`} x1="40" y1={y} x2="390" y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth={1} strokeDasharray="2,2" />
+                );
+              }
+              return lines;
+            })()}
+            
+            {/* Data polyline */}
+            {(() => {
+              const vals = series.map(s => s.value);
+              const min = Math.min(...vals);
+              const max = Math.max(...vals);
+              const points = series.map((s, i) => {
+                const x = 40 + ((i / (series.length - 1)) * 350);
+                const y = max === min ? 120 : 220 - ((s.value - min) / (max - min)) * 200;
+                return `${x},${y}`;
+              }).join(' ');
+              return <polyline fill="none" stroke={type === 'electricity' ? '#51cf66' : '#ffa94d'} strokeWidth={2} points={points} />
+            })()}
+            
+            {/* Axis labels */}
+            <text x="10" y="100" fontSize="10" fill="rgba(255,255,255,0.5)" textAnchor="middle" transform="rotate(-90 10 100)">Usage (kWh)</text>
+            <text x="215" y="260" fontSize="10" fill="rgba(255,255,255,0.5)" textAnchor="middle">Days</text>
+          </svg>
+        </div>
+      )}
         </>
       ) : null}
     </div>

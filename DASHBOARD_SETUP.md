@@ -1,53 +1,208 @@
-# Dashboard Setup Guide
+# Dashboard Setup & Troubleshooting Guide
 
-This guide explains the new modular dashboard architecture and how to set up each component.
+## Recent Changes & Issues Fixed
+
+### 1. **Octopus Energy - Bill/Due/Usage showing 0** ✅ FIXED
+- **Problem:** Client-side API calls with exposed credentials
+- **Solution:** Created `/api/octopus/account` server route
+- **Action:** Add to `.env.local`:
+  ```env
+  OCTOPUS_API_KEY=your_api_key
+  OCTOPUS_ACCOUNT=your_account_number
+  ```
+- **Chart:** Now shows larger graph with Y-axis (price) and X-axis (days)
+
+### 2. **Gmail - Shows "Connected" but messages are "Not available"** ✅ FIXED
+- **Problem:** Can't use OAuth credentials for both login AND Gmail API
+- **Solution:** Clarified variable names and OAuth flow
+- **Required:** Set ONE of:
+  - `GMAIL_SERVICE_ACCOUNT_KEY` (service account JSON), OR
+  - `GMAIL_REFRESH_TOKEN` (user OAuth token)
+- **See:** [Gmail Setup Guide](./docs/gmail-setup.md)
+
+### 3. **Yahoo Mail - Unclear credentials** ✅ CLARIFIED
+- **Problem:** Multiple credential types needed, not fully implemented
+- **Status:** Placeholder ready for implementation
+- **See:** [Yahoo Mail Setup Guide](./docs/yahoo-mail-setup.md)
+
+### 4. **News - No articles shown** ✅ FIXED
+- **Problem:** `NEWS_API_KEY` not configured
+- **Solution:** Add to `.env.local`:
+  ```env
+  NEWS_API_KEY=your_newsapi_key_from_newsapi.org
+  ```
+
+### 5. **Weather + Network + Power - Unified city search** ✅ FIXED
+- **New Component:** `CityDashboard.tsx`
+- **Features:** One city input field searches Weather + Network Status + Power Utilities
+- **Updated:** `PublicInfo.tsx` now uses the unified component
+
+---
 
 ## Architecture Overview
 
-The dashboard is now composed of modular components organized as follows:
-
 ```
 components/dashboard/
-├── PersonalInfo.tsx          # Container for personal information
-├── PublicInfo.tsx            # Container for public information
-├── OctopusEnergy.tsx         # Energy bills (Octopus Energy API)
-├── HSBCBank.tsx              # Bank balance (HSBC Open Banking API)
-├── Gmail.tsx                 # Email unread count (Gmail API)
-├── YahooMail.tsx             # Email unread count (Yahoo Mail API)
-├── Weather.tsx               # Weather data (OpenWeatherMap API)
-├── News.tsx                  # Latest news (NewsAPI)
-├── NetworkStatus.tsx         # Network/ISP status
-├── PowerUtilities.tsx        # Power grid and flooding alerts
-└── StockIndex.tsx            # Stock market indices
+├── NonPublicInfo.tsx         # Private info container
+│   ├── OctopusEnergy.tsx     # Energy bills + usage chart
+│   ├── Gmail.tsx             # Gmail unread + message list
+│   └── YahooMail.tsx         # Yahoo unread + message list
+└── PublicInfo.tsx            # Public info container
+    ├── CityDashboard.tsx     # Weather + Network + Power (unified)
+    ├── News.tsx              # Latest news articles
+    └── StockIndex.tsx        # Stock index + symbol search + chart
 
 app/api/
-├── bank/hsbc-balance/route.ts      # HSBC balance endpoint
-├── email/gmail-unread/route.ts      # Gmail unread endpoint
-└── email/yahoo-unread/route.ts      # Yahoo Mail unread endpoint
+├── octopus/
+│   ├── account/route.ts      # Bill, due date, usage (NEW SERVER ROUTE)
+│   └── consumption/route.ts  # Usage series + chart data
+├── email/
+│   ├── gmail-unread/route.ts       # Unread count + email address
+│   ├── gmail-messages/route.ts     # Message list (NEW)
+│   ├── yahoo-unread/route.ts       # Yahoo unread status
+│   └── yahoo-messages/route.ts     # Yahoo messages (placeholder)
+├── stocks/
+│   ├── route.ts              # Stock quotes
+│   └── chart/route.ts        # Stock price history
+└── news/route.ts             # News articles (server-side)
 ```
-
-## Personal Information Components
-
-### 1. Octopus Energy
-**File**: `components/dashboard/OctopusEnergy.tsx`
-
-**Setup**:
-1. Register at https://developer.octopusenergy.com
-2. Generate an API key for your account
-3. Get your account number from your Octopus Energy dashboard
-4. Add to `.env.local`:
-```
-NEXT_PUBLIC_OCTOPUS_API_KEY=your_api_key
-NEXT_PUBLIC_OCTOPUS_ACCOUNT=your_account_number
-```
-
-**Data Fetched**:
-- Current bill amount
-- Bill due date
-- Energy usage (kWh)
-- Connection status
 
 ---
+
+## Environment Variables Setup
+
+### Authentication (.env.local)
+```env
+NEXTAUTH_SECRET=your_secret_generated_with_openssl_rand_-base64_32
+AUTHORIZED_EMAILS=your.email@gmail.com
+
+NEXTAUTH_URL=http://localhost:3000
+
+# Google OAuth (for NextAuth login ONLY)
+GOOGLE_OAUTH_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_OAUTH_CLIENT_SECRET=your_google_oauth_client_secret
+
+# Other OAuth (optional)
+FACEBOOK_CLIENT_ID=...
+MICROSOFT_CLIENT_ID=...
+LINKEDIN_CLIENT_ID=...
+```
+
+### Dashboard APIs
+```env
+# Gmail API (choose ONE)
+GMAIL_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
+# OR
+GMAIL_REFRESH_TOKEN=your_refresh_token_here
+
+# Yahoo Mail (optional, not fully implemented)
+YAHOO_CLIENT_ID=...
+YAHOO_CLIENT_SECRET=...
+YAHOO_REFRESH_TOKEN=...
+
+# Public APIs
+NEXT_PUBLIC_OPENWEATHER_API_KEY=your_openweather_key
+NEWS_API_KEY=your_newsapi_key
+STOCK_API_KEY=your_alphavantage_key
+
+# Octopus Energy
+OCTOPUS_API_KEY=your_api_key
+OCTOPUS_ACCOUNT=your_account_number
+```
+
+---
+
+## Component Details
+
+### OctopusEnergy.tsx
+- **Fetches from:** `/api/octopus/account` (server route)
+- **Displays:** Bill, Due Date, Usage
+- **Chart:** 30-day usage trend with axes
+- **Toggle:** Switch between Electricity and Gas
+
+### Gmail.tsx
+- **Fetches from:** `/api/email/gmail-unread`, `/api/email/gmail-messages`
+- **Requires:** Valid `GMAIL_REFRESH_TOKEN` or `GMAIL_SERVICE_ACCOUNT_KEY`
+- **Displays:** Email address, unread count, message list (10/20/50/100 selectable)
+
+### YahooMail.tsx
+- **Status:** Placeholder - awaiting OAuth implementation
+- **Planned:** Unread count + message list like Gmail
+
+### CityDashboard.tsx (NEW - UNIFIED)
+- **One input field:** Enter any city name
+- **Fetches:** Weather (OpenWeatherMap), Network status, Power utilities
+- **Displays:** Temperature, conditions, humidity, wind speed, ISP status, power grid status
+
+### StockIndex.tsx
+- **Search input:** Enter stock symbol (e.g., "AAPL", "TSLA")
+- **Chart:** 100-day price history from Alpha Vantage
+- **Pre-configured:** Shows MSFT, IBM, AAPL quotes by default
+
+### News.tsx
+- **Fetches from:** `/api/news` (server-side proxy)
+- **Requires:** `NEWS_API_KEY` set in `.env.local`
+- **Displays:** Top 3 UK headlines with links
+
+---
+
+## Testing Checklist
+
+1. **Add `NEWS_API_KEY`** from newsapi.org
+   - [ ] Verify 3+ news articles appear on dashboard
+
+2. **Add Octopus credentials**
+   - [ ] Bill amount displays (not 0)
+   - [ ] Due date displays (not ---)
+   - [ ] Usage displays (not 0)
+   - [ ] Chart renders with axes
+
+3. **Add Gmail credentials**
+   - [ ] Email address appears
+   - [ ] Unread count displays
+   - [ ] Messages list populates
+
+4. **Test CityDashboard**
+   - [ ] Type "Tokyo" → Weather updates
+   - [ ] Type "New York" → Weather updates
+   - [ ] Network + Power sections visible
+
+5. **Test StockIndex**
+   - [ ] Search "TSLA" → Chart appears
+   - [ ] Search "GOOGL" → Chart appears
+
+---
+
+## Troubleshooting
+
+### "No messages available" in Gmail
+- Ensure `GMAIL_ACCESS_TOKEN` or `GMAIL_REFRESH_TOKEN` is set
+- Check server logs: `npm run dev` shows errors
+- Verify Gmail API is enabled in Google Cloud Console
+
+### "0" values in Octopus
+- Make sure `OCTOPUS_API_KEY` and `OCTOPUS_ACCOUNT` are in `.env.local`
+- Restart dev server after adding env vars
+- Check server logs for API errors
+
+### No news shown
+- Add `NEWS_API_KEY` from https://newsapi.org
+- Restart dev server: `npm run dev`
+- Check browser console (F12) for errors
+
+### City search not updating weather
+- Verify `NEXT_PUBLIC_OPENWEATHER_API_KEY` is set
+- Wait 0.5 seconds after typing (debounced)
+- Check browser console for API errors
+
+---
+
+## Next Steps
+
+- [ ] Implement Gmail OAuth server flow (auto token refresh)
+- [ ] Implement Yahoo Mail OAuth + IMAP fallback
+- [ ] Add real meter consumption to Octopus (requires meter IDs)
+- [ ] Add interactive charts with Recharts or Chart.js library
 
 ### 2. HSBC Bank
 **File**: `components/dashboard/HSBCBank.tsx`  
