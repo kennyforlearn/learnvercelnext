@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import OctopusEnergy from "./OctopusEnergy";
-import HSBCBank from "./HSBCBank";
 import Gmail from "./Gmail";
 import YahooMail from "./YahooMail";
 
