@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import OctopusEnergy from "./OctopusEnergy";
-import Gmail from "./Gmail";
-import YahooMail from "./YahooMail";
 
 export default function NonPublicInfo() {
   const [mounted, setMounted] = useState(false);
@@ -28,10 +26,8 @@ export default function NonPublicInfo() {
         Private Information
       </h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "20px" }}>
         <OctopusEnergy />
-        <Gmail />
-        <YahooMail />
       </div>
     </div>
   );

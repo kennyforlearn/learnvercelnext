@@ -10,9 +10,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Use NewsAPI server-side to avoid client TLS/protocol issues (426)
-    const url = `https://newsapi.org/v2/top-headlines?country=gb&pageSize=5`;
-    const resp = await fetch(url, {
+    // Allow optional query params for keywords and country (default us).
+    const { searchParams } = new URL(request.url);
+    const country = searchParams.get("country") || "us";
+    const query = searchParams.get("q")?.trim();
+
+    const url = new URL("https://newsapi.org/v2/top-headlines");
+    url.searchParams.set("country", country);
+    url.searchParams.set("pageSize", "5");
+    if (query) {
+      url.searchParams.set("q", query);
+    }
+
+    const resp = await fetch(url.toString(), {
       headers: {
         "X-Api-Key": apiKey,
         Accept: "application/json",

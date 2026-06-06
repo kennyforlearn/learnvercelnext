@@ -11,12 +11,19 @@ export default function News() {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [country, setCountry] = useState("us");
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // Use server-side endpoint to avoid client protocol/TLS issues (HTTP 426)
-        const response = await fetch("/api/news");
+        setLoading(true);
+        const params = new URLSearchParams({ country });
+        if (query.trim()) {
+          params.set("q", query.trim());
+        }
+
+        const response = await fetch(`/api/news?${params.toString()}`);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch news: ${response.status}`);
@@ -43,7 +50,7 @@ export default function News() {
     // Refresh news every 30 minutes
     const interval = setInterval(fetchNews, 1800000);
     return () => clearInterval(interval);
-  }, []);
+  }, [query, country]);
 
   return (
     <div
@@ -55,6 +62,42 @@ export default function News() {
       }}
     >
       <h3 style={{ fontSize: "1rem", fontWeight: "600", marginBottom: "8px" }}>Latest News</h3>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "12px" }}>
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search keywords"
+          style={{
+            flex: "1 1 180px",
+            padding: "8px 10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            backgroundColor: "#fff",
+            color: "#111",
+          }}
+        />
+        <select
+          value={country}
+          onChange={(event) => setCountry(event.target.value)}
+          style={{
+            padding: "8px 10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            backgroundColor: "#fff",
+            color: "#111",
+            minWidth: "140px",
+          }}
+        >
+          <option value="us">United States</option>
+          <option value="gb">United Kingdom</option>
+          <option value="ca">Canada</option>
+          <option value="au">Australia</option>
+          <option value="de">Germany</option>
+          <option value="fr">France</option>
+          <option value="in">India</option>
+          <option value="jp">Japan</option>
+        </select>
+      </div>
       {loading ? (
         <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>Loading...</p>
       ) : error ? (
@@ -82,7 +125,9 @@ export default function News() {
             </a>
           ))}
         </div>
-      ) : null}
+      ) : (
+        <p style={{ margin: "5px 0", fontSize: "0.9rem", color: "#999" }}>No articles found.</p>
+      )}
     </div>
   );
 }
