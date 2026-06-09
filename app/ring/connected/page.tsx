@@ -1,10 +1,17 @@
+export const dynamic = "force-dynamic";
+
 interface RingConnectedProps {
-  searchParams: { status?: string; message?: string };
+  searchParams: { status?: string | string[]; message?: string | string[] };
+}
+
+function normalizeQueryValue(value: string | string[] | undefined) {
+  if (!value) return "unknown";
+  return Array.isArray(value) ? value[0] : value;
 }
 
 export default function RingConnectedPage({ searchParams }: RingConnectedProps) {
-  const status = searchParams.status || "unknown";
-  const message = searchParams.message || "";
+  const status = normalizeQueryValue(searchParams.status);
+  const message = normalizeQueryValue(searchParams.message) || "";
 
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "2rem" }}>
