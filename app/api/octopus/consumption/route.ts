@@ -49,16 +49,19 @@ async function fetchOctopusConsumption(
       monthlyData[month] = (monthlyData[month] || 0) + result.consumption;
     });
 
-    // Convert to 12-month array for the current/requested period
+    // Convert to 12-month array for the target year only
     const months = Object.keys(monthlyData).sort();
     const monthly = Array(12).fill(0);
+    const targetYear = periodFrom.substring(0, 4);
 
     if (months.length > 0) {
-      const startMonth = months[0];
       months.forEach((month) => {
-        const d = new Date(`${month}-01`);
-        const monthIndex = d.getMonth();
-        monthly[monthIndex] = Math.round(monthlyData[month] * 100) / 100;
+        // Only include months from the target year (YYYY-MM format)
+        if (month.startsWith(targetYear)) {
+          const d = new Date(`${month}-01`);
+          const monthIndex = d.getMonth();
+          monthly[monthIndex] = Math.round(monthlyData[month] * 100) / 100;
+        }
       });
     }
 
@@ -106,16 +109,19 @@ async function fetchGasConsumption(
       monthlyData[month] = (monthlyData[month] || 0) + result.consumption;
     });
 
-    // Convert to 12-month array for the current/requested period
+    // Convert to 12-month array for the target year only
     const months = Object.keys(monthlyData).sort();
     const monthly = Array(12).fill(0);
+    const targetYear = periodFrom.substring(0, 4);
 
     if (months.length > 0) {
-      const startMonth = months[0];
       months.forEach((month) => {
-        const d = new Date(`${month}-01`);
-        const monthIndex = d.getMonth();
-        monthly[monthIndex] = Math.round(monthlyData[month] * 100) / 100;
+        // Only include months from the target year (YYYY-MM format)
+        if (month.startsWith(targetYear)) {
+          const d = new Date(`${month}-01`);
+          const monthIndex = d.getMonth();
+          monthly[monthIndex] = Math.round(monthlyData[month] * 100) / 100;
+        }
       });
     }
 
