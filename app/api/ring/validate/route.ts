@@ -8,9 +8,8 @@ export async function GET(request: NextRequest) {
     }
 
     const endpoints = [
-      "https://api.ring.com/clients_api/doorbots",
-      "https://api.ring.com/clients_api/devices",
-      "https://api.ring.com/clients_api/clients",
+      "https://api.amazonvision.com/v1/users/me",
+      "https://api.amazonvision.com/v1/devices"
     ];
 
     for (const url of endpoints) {
