@@ -58,6 +58,6 @@ export async function GET(request: NextRequest) {
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
-  response.cookies.delete("ring_oauth_state", { path: "/" });
+  response.cookies.delete("ring_oauth_state");
   return response;
 }
