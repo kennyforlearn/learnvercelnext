@@ -17,17 +17,13 @@ export async function GET(request: NextRequest) {
   const storedState = request.cookies.get("ring_oauth_state")?.value;
 
   if (!code || !state || !storedState || state !== storedState) {
-    return NextResponse.redirect(
-      `/ring/connected?status=error&message=${encodeURIComponent("Invalid Ring OAuth callback state")}`
-    );
+    return NextResponse.redirect("/dashboard");
   }
 
   const clientId = process.env.RING_CLIENT_ID;
   const clientSecret = process.env.RING_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(
-      `/ring/connected?status=error&message=${encodeURIComponent("Ring client credentials are not configured")}`
-    );
+    return NextResponse.redirect("/dashboard");
   }
 
   const params = new URLSearchParams({
@@ -46,11 +42,10 @@ export async function GET(request: NextRequest) {
 
   const tokenData = await tokenResponse.json();
   if (!tokenResponse.ok) {
-    const message = tokenData.error_description || tokenData.error || "Ring token exchange failed";
-    return NextResponse.redirect(`/ring/connected?status=error&message=${encodeURIComponent(message)}`);
+    return NextResponse.redirect("/dashboard");
   }
 
-  const response = NextResponse.redirect("/ring/connected?status=success");
+  const response = NextResponse.redirect("/dashboard");
   response.cookies.set("ring_refresh_token", tokenData.refresh_token ?? "", {
     httpOnly: true,
     secure: true,
